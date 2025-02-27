@@ -34,8 +34,22 @@
   }
 
   #informațieListă {
-    height: 11lh;
+    max-height: 11lh;
     overflow: auto;
+  }
+
+  div::-webkit-scrollbar {
+    width: 1ch;
+  }
+
+  div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.8); 
+    border-radius: 10px;
+  }
+
+  div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.8); 
   }
 
 </style>
@@ -421,7 +435,7 @@
     var playerDoi;
     var fadeSeconds;
     var precizie = 44;
-    var listaVideoclipuri = [["zj0gMSmxHHc", "Iubirea Ce Ți-O Știu"], ["VYweq4hHIBI", "Perfect - ICF Sunday Night (Official Music Video)"]];
+    var listaVideoclipuri = [];
 
     function onYouTubeIframeAPIReady() {
       playerUnu = new YT.Player('playerUnu', {
@@ -555,10 +569,13 @@
     }
 
     function damiUrmătorulVideoclip() {
-      let videoclip = listaVideoclipuri.shift();
-      listaVideoclipuri.push(videoclip);
-      afișeazăLista();
-      return videoclip[0];
+      try {
+        let videoclip = listaVideoclipuri.shift();
+        listaVideoclipuri.push(videoclip);
+        afișeazăLista();
+        return videoclip[0];
+      } catch (error) {
+      }
     }
 
     function damiRedorPrincipal() {
@@ -619,12 +636,15 @@
     }
 
     function afișeazăLista() {
-      var info = "Urmează:<br>";
-      for (let i = 0; i < listaVideoclipuri.length; i++) {
-        var numar = i + 1;
+      try {
+        var info = "Urmează:<br>";
+        for (let i = 0; i < listaVideoclipuri.length; i++) {
+          var numar = i + 1;
           info = info + numar + ": " + listaVideoclipuri[i][1] + " [" + listaVideoclipuri[i][0] + "]" + damiButonulȘtergeVideoclip(i) + "<br>";
+        }
+        document.getElementById('informațieListă').innerHTML = info;
+      } catch (error) {
       }
-      document.getElementById('informațieListă').innerHTML = info;
     }
 
     function damiButonulPrimulVideoclip(număr) {
