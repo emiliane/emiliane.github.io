@@ -86,6 +86,7 @@
       <br>
     </div>
     <div id="informație"></div><br>
+    <div id="embed"></div><br>
     <div id="informațieListă"></div><br>
     <div>Adaugă videoclipuri după identificator cu sau fără nume:</div>
     <textarea id="lista" rows="4" maxRows="11"
@@ -93,22 +94,23 @@
     <br>
     <button type="button" onclick="adaugăVideoclipuriLaÎnceput()">Următor</button>
     <button type="button" onclick="adaugăVideoclipuriLaSfârșit()">În coadă</button>
-    <br><br>
+    <br>
+    <br>
     <div>
       <button id="butonUtil" onclick="divUtil()">Informații utile</button>
       <div id="informațiiUtile" style="display: none;">
         <p>Folosind <a href="https://apps.microsoft.com/detail/9n0dx20hk701">Windows Terminal</a> pentru generare
           lista.txt conținând lista videoclipurilor listei de redare cu <a
-            href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation">yt-dlp</a>.</p>
-        .\yt-dlp.exe --print "%(id)s %(title)s | %(playlist_index)s" --flat-playlist
-        "https://www.youtube.com/playlist?list=PLycloV5Iov5EKRJhDaMmDTA-uMaasis-S" > lista.txt
+            href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation">yt-dlp</a>.
+        </p>
+        <p>.\yt-dlp.exe --print "%(id)s %(title)s | %(playlist_index)s" --flat-playlist
+          "https://www.youtube.com/playlist?list=PLycloV5Iov5EKRJhDaMmDTA-uMaasis-S" > lista.txt
+        </p>
       </div>
     </div>
-    <br>
+    <div id="depanare"></div>
     <div><a href="https://emisarcrai.blogspot.com/p/jucator-de-discuri.html">Blogger</a> <a
         href="https://emiliane.github.io/">GitHub</a></div>
-    <br>
-    <div id="depanare"></div>
   </h4>
 
   <script>
@@ -393,10 +395,15 @@
     }
 
     function hrefLink(name, youtubeID) {
-      embed = '<a href="https://youtu.be/' + youtubeID + '" target="_blank">' + name + '</a>';
       nocookie = '<a href="https://www.youtube-nocookie.com/embed/' + youtubeID + '" target="_blank">' + youtubeID + '</a>';
-      hrefs = embed + ' [' + nocookie + ']'
+      script = '<a href="javascript:iframeEmbed(\'' + youtubeID + '\', \'' + name + '\');">' + name + '</a>';
+      hrefs = script + ' [' + nocookie + ']'
       return hrefs
+    }
+
+    function iframeEmbed(youtubeID, name) {
+      htmlIframe = '<iframe width="100%" src="https://www.youtube-nocookie.com/embed/' + youtubeID + '/" title="' + name + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+      document.getElementById('embed').innerHTML = htmlIframe
     }
 
     function damiButonulPrimulVideoclip(număr) {
