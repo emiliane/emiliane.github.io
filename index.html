@@ -2,13 +2,12 @@
 <meta charset="utf-8">
 
 <style type="text/css">
-
   body {
-  	font: normal normal 25px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
-  	color: #0A00A0;
-  	padding: 0 40px 40px 40px;
-    background: linear-gradient(rgba(222, 222, 222, 0.888), rgba(111, 111, 111, 0.555)), 
-              url(https://themes.googleusercontent.com/image?id=16p0DhIQDIoTZOUyiLjbBSajoCvlXtai8rSbZiLnXfEwdwTFgFVIeDYQBf3S_b5BpMAfo);
+    font: normal normal 25px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+    color: #0A00A0;
+    padding: 0 40px 40px 40px;
+    background: linear-gradient(rgba(222, 222, 222, 0.888), rgba(111, 111, 111, 0.555)),
+      url(https://themes.googleusercontent.com/image?id=16p0DhIQDIoTZOUyiLjbBSajoCvlXtai8rSbZiLnXfEwdwTFgFVIeDYQBf3S_b5BpMAfo);
     background-size: cover;
   }
 
@@ -26,9 +25,12 @@
     padding: 10px;
   }
 
-  input, button, textarea, .scris {
+  input,
+  button,
+  textarea,
+  .scris {
     font: normal 25px Helvetica;
-    background-color:rgba(44,0,0,0.1);
+    background-color: rgba(44, 0, 0, 0.1);
     border-radius: 4px;
     color: #0A00A0;
   }
@@ -43,19 +45,22 @@
   }
 
   div::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.8); 
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
     border-radius: 10px;
   }
 
   div::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.8); 
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
   }
-
 </style>
 
 <html>
-<head><title>Jucător de discuri</title></head>
+
+<head>
+  <title>Jucător de discuri</title>
+</head>
+
 <body>
   <div class="row">
     <div class="column" style="background-color:#07a;">
@@ -77,28 +82,35 @@
       Estompează:
       <input type="number" id="estompeaza" value="4" min="0" max="100">
       secunde
+      <button type="button" id="listaMea" onclick="adaugălistaMea()">Lista mea</button>
       <br>
     </div>
     <div id="informație"></div><br>
     <div id="informațieListă"></div><br>
     <div>Adaugă videoclipuri după identificator cu sau fără nume:</div>
-    <textarea id="lista" rows="11" cols="44" placeholder="Identificator Nume&#10;&#10;A1B2C3D4E5F Unu&#10;G1H2I3J4K5L Doi" style="width:100%;">
-      1r_cA93cJkM Gather25 - Watch LIVE Now!
-    </textarea><br>
+    <textarea id="lista" rows="4" maxRows="11"
+      placeholder="Identificator Nume&#10;&#10;A1B2C3D4E5F Unu&#10;G1H2I3J4K5L Doi" style="width:100%;"></textarea>
+    <br>
     <button type="button" onclick="adaugăVideoclipuriLaÎnceput()">Următor</button>
     <button type="button" onclick="adaugăVideoclipuriLaSfârșit()">În coadă</button>
     <br><br>
     <div>
       <button id="butonUtil" onclick="divUtil()">Informații utile</button>
       <div id="informațiiUtile" style="display: none;">
-        <p>Folosind <a href="https://apps.microsoft.com/detail/9n0dx20hk701">Windows Terminal</a> pentru generare lista.txt conținând lista videoclipurilor listei de redare cu <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation">yt-dlp</a>.</p>
-        .\yt-dlp.exe --print "%(id)s %(title)s | %(playlist_index)s" --flat-playlist "https://www.youtube.com/playlist?list=PLycloV5Iov5EKRJhDaMmDTA-uMaasis-S" > lista.txt
+        <p>Folosind <a href="https://apps.microsoft.com/detail/9n0dx20hk701">Windows Terminal</a> pentru generare
+          lista.txt conținând lista videoclipurilor listei de redare cu <a
+            href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation">yt-dlp</a>.</p>
+        .\yt-dlp.exe --print "%(id)s %(title)s | %(playlist_index)s" --flat-playlist
+        "https://www.youtube.com/playlist?list=PLycloV5Iov5EKRJhDaMmDTA-uMaasis-S" > lista.txt
       </div>
     </div>
     <br>
-    <div><a href="https://emisarcrai.blogspot.com/p/jucator-de-discuri.html">Blogger</a> <a href="https://emiliane.github.io/">GitHub</a></div>
+    <div><a href="https://emisarcrai.blogspot.com/p/jucator-de-discuri.html">Blogger</a> <a
+        href="https://emiliane.github.io/">GitHub</a></div>
+    <br>
+    <div id="depanare"></div>
   </h4>
-    
+
   <script>
     // 2. This code loads the IFrame Player API code asynchronously.
     var tag = document.createElement('script');
@@ -111,8 +123,6 @@
     //    after the API code downloads.
     var playerUnu;
     var playerDoi;
-    var playerOne = {player:playerUnu, active:false};
-    var playerTwo = {player:playerDoi, active:false};
     var fadeSeconds;
     var precizie = 44;
     var listaVideoclipuri = [];
@@ -199,10 +209,10 @@
         ajusteazaVolum(playerUnu);
         ajusteazaVolum(playerDoi);
         redare();
-      } catch(err) {
+      } catch (err) {
         document.getElementById('informație').innerHTML = err.message;
       }
-    	setTimeout(bucla, precizie);
+      setTimeout(bucla, precizie);
     }
 
     function redare() {
@@ -219,25 +229,44 @@
       fadeSeconds = document.getElementById("estompeaza").value;
     }
 
-    function adaugăVideoclipuriLaÎnceput() {
-      listaVideoclipuri = damiLista().concat(listaVideoclipuri);
+    function adaugăVideoclipuriLaÎnceput(lista) {
+      if (!lista) {
+        lista = document.getElementById("lista").value;
+      }
+      listaVideoclipuri = damiLista(lista).concat(listaVideoclipuri);
       listaVideoclipuri = listaVideoclipuri.filter(elm => elm);
       document.getElementById("lista").value = "";
       afișeazăLista();
     }
 
     function adaugăVideoclipuriLaSfârșit() {
-      listaVideoclipuri = listaVideoclipuri.concat(damiLista());
+      lista = document.getElementById("lista").value;
+      listaVideoclipuri = listaVideoclipuri.concat(damiLista(lista));
       listaVideoclipuri = listaVideoclipuri.filter(elm => elm);
       document.getElementById("lista").value = "";
       afișeazăLista();
+    }
+
+    function adaugălistaMea() {
+      document.getElementById("listaMea").style.display = "none";
+      (async () => {
+        url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.txt';
+        data = await fetchAsync(url);
+        adaugăVideoclipuriLaÎnceput(data);
+        afișeazăLista();
+      })();
+    }
+
+    async function fetchAsync(url) {
+      let response = await fetch(url);
+      let data = await response.text();
+      return data;
     }
 
     function amestecăLista() {
       listaVideoclipuri = shuffle(listaVideoclipuri);
       afișeazăLista();
     }
-
 
     function shuffle(array) {
       var copy = [], n = array.length, i;
@@ -259,9 +288,13 @@
       return copy;
     }
 
-    function damiLista(argument) {
-      var lista = document.getElementById("lista").value.trim().split(/\r?\n/);
+    function damiLista(lista) {
       var listaNoua = [];
+      if (lista) {
+        lista = lista.trim().split(/\r?\n/);
+      } else {
+        return listaNoua;
+      }
       for (var i = 0; i < lista.length; i++) {
         if (lista[i]) {
           var element = lista[i].trim();
@@ -314,7 +347,7 @@
       var timpActual = redor.getCurrentTime();
       var timpRamas = redor.getDuration() - timpActual;
 
-    	if (timpRamas <= fadeSeconds) {
+      if (timpRamas <= fadeSeconds) {
         var percent = timpRamas / fadeSeconds;
         volum = percent * 100;
       } else if (timpActual <= fadeSeconds) {
@@ -327,7 +360,7 @@
     }
 
     function afiseaza(redor, numar) {
-    	var titlu = document.querySelector("#player" + numar).title;
+      var titlu = document.querySelector("#player" + numar).title;
 
       if (titlu == "YouTube video player") {
         redor.cueVideoById(damiUrmătorulVideoclip());
@@ -338,7 +371,7 @@
       var timp = redor.getCurrentTime();
       var timpRamas = redor.getDuration() - timp;
 
-    	document.getElementById('titlu'+ numar).innerHTML = titlu;
+      document.getElementById('titlu' + numar).innerHTML = titlu;
       document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timp.toFixed(2);
 
       if (redor.getPlayerState() == YT.PlayerState.PLAYING) {
@@ -400,7 +433,7 @@
       let minutes = Math.floor(seconds / 60);
       let extraSeconds = seconds % 60;
       minutes = minutes < 10 ? "0" + minutes : minutes;
-      extraSeconds = extraSeconds< 10 ? "0" + extraSeconds : extraSeconds;
+      extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
       var a = minutes + ":" + extraSeconds;
       return a;
     }
@@ -415,4 +448,5 @@
     }
   </script>
 </body>
+
 </html>
