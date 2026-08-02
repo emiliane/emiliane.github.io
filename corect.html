@@ -11,14 +11,18 @@
     
 <textarea id="corectat" rows="9" maxRows="44"
       placeholder="Textul corectat…" style="width:100%;"></textarea>  
+        <h4>Modificări</h4>
+<textarea id="modificari" rows="9" maxRows="44"
+      placeholder="Modificări" style="width:100%;"></textarea>  
       
     <script>
     
     function corectare(text) {
       if (!text) {
         text = document.getElementById("introdus").value;
-        text = diacritice(text);
-        document.getElementById("corectat").value = text;
+        textcorectat = diacritice(text);
+        document.getElementById("corectat").value = textcorectat;
+        document.getElementById("modificari").value = modificari(text, textcorectat);
       }
     }
     
@@ -56,6 +60,29 @@
         s = s.replace(//g, ' ');
         
         return(s);
+    }
+
+    function modificari(a, b) {
+
+        const lines1 = a.split(/\r?\n/);
+        const lines2 = b.split(/\r?\n/);
+
+        m = '';
+        let c = 1;
+        for (let i = 0; i < lines1.length; i++) {
+            if (lines1[i] !== lines2[i]) {
+                c = c + 1;
+                m = m + " - Linia " + i + '. -\n';
+                m = m + lines1[i] + '\n';
+                m = m + lines2[i] + '\n\n';
+            }
+        }
+
+        if (c > 0) {
+            console.log('Modificări la ', c, ' linii.');
+        }
+
+        return m;
     }
 
     </script>
