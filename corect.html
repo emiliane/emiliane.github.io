@@ -73,7 +73,8 @@
         for (let i = 0; i < lines1.length; i++) {
             if (lines1[i] !== lines2[i]) {
                 c = c + 1;
-                m = m + " - Linia " + i + 1 + '. -\n';
+                l = i + 1
+                m = m + " - Linia " + l + '. -\n';
                 m = m + lines1[i] + '\n';
                 m = m + lines2[i] + '\n\n';
             }
