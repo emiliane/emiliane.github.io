@@ -4,26 +4,27 @@
 <html>
    
     <body>
-        <h1>Corectare text</h1>
-        <textarea id="introdus" rows="9" maxRows="44"
-      placeholder="Introducere text…" style="width:100%;"></textarea>
-    <button type="button" onclick="corectare()">Corectează</button>
-    
-<textarea id="corectat" rows="9" maxRows="44"
-      placeholder="Textul corectat…" style="width:100%;"></textarea>  
-        <h4>Modificări</h4>
-<textarea id="modificari" rows="9" maxRows="44"
-      placeholder="Modificări" style="width:100%;"></textarea>  
+        <h2>Corectare text</h2>
+        <p>Încarcă fișier: </p>
+        <input type="file" id="fileInput" />
+        <p>Introducere text: </p>
+        <textarea id="introdus" rows="9" maxRows="44" placeholder="Introducere text…" style="width:100%;"></textarea>
+        <button type="button" onclick="corectare()">Corectează</button>
+        <p>Textul corectat: </p>
+        <textarea id="corectat" rows="9" maxRows="44" placeholder="Textul corectat…" style="width:100%;"></textarea>
+        <button onclick="downloadFile()">Descarcă fișier</button>  
+        <p>Modificări</p>
+        <textarea id="modificari" rows="9" maxRows="44" placeholder="Modificări" style="width:100%;"></textarea>  
       
     <script>
     
     function corectare(text) {
-      if (!text) {
-        text = document.getElementById("introdus").value;
-        textcorectat = diacritice(text);
-        document.getElementById("corectat").value = textcorectat;
-        document.getElementById("modificari").value = modificari(text, textcorectat);
-      }
+        if (!text) {
+            text = document.getElementById("introdus").value;
+            textcorectat = diacritice(text);
+            document.getElementById("corectat").value = textcorectat;
+            document.getElementById("modificari").value = modificari(text, textcorectat);
+        }
     }
     
     function diacritice(s) {
@@ -72,7 +73,7 @@
         for (let i = 0; i < lines1.length; i++) {
             if (lines1[i] !== lines2[i]) {
                 c = c + 1;
-                m = m + " - Linia " + i + '. -\n';
+                m = m + " - Linia " + i + 1 + '. -\n';
                 m = m + lines1[i] + '\n';
                 m = m + lines2[i] + '\n\n';
             }
@@ -87,5 +88,46 @@
 
     </script>
 
+    <script>
+        document.getElementById('fileInput')
+            .addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                const filename = file.name;
+                const reader = new FileReader();
+
+                reader.onload = function () {
+                    const content = reader.result;
+                    console.log(content);
+                    document.getElementById("introdus").value = content + filename;
+                };
+
+                reader.onerror = function () {
+                    console.error('Error reading the file');
+                };
+
+                reader.readAsText(file, 'utf-8');
+
+                localStorage.setItem("filename", filename);
+            });
+    </script>
+
+    <script>
+        const downloadFile = () => {
+            const link = document.createElement("a");
+            const content = document.getElementById("corectat").value;
+         
+            if (!content.trim()) {
+                // alert("Please enter some content!");
+                return;
+            }
+         
+            const file = new Blob([content], { type: 'text/plain' });
+            link.href = URL.createObjectURL(file);
+            name = localStorage.getItem("filename")
+            link.download = name;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        };
+    </script>
     </body>
 </html>
