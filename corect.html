@@ -7,6 +7,11 @@
         <h2>Corectare text</h2>
         <p>Încarcă fișier: </p>
         <input type="file" id="fileInput" />
+        <select id="encoding">
+            <option value="utf-8">UTF-8</option>
+            <option value="windows-1252">Windows (Western Latin)</option>
+            <option value="ascii">ASCII</option>
+        </select>
         <p>Introducere text: </p>
         <textarea id="introdus" rows="9" maxRows="44" placeholder="Introducere text…" style="width:100%;"></textarea>
         <button type="button" onclick="corectare()">Corectează</button>
@@ -106,8 +111,8 @@
                     console.error('Error reading the file');
                 };
 
-                reader.readAsText(file, 'utf-8');
-
+                encoding = document.getElementById("encoding").value
+                reader.readAsText(file, encoding);
                 localStorage.setItem("filename", filename);
             });
     </script>
