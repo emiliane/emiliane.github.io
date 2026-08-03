@@ -6,6 +6,7 @@
     <body>
         <h2>Corectare text</h2>
         <p>
+            Încarcă fișier <input type="file" id="fileInput" /><br>
             Codificări
             <select id="encoding">
                 <option value=""></option>
@@ -50,16 +51,15 @@
                 <option value="utf-16le">UTF-16LE</option>
                 <option value="x-user-defined">x-user-defined</option>
             </select>
-            Încarcă fișier: <input type="file" id="fileInput" />
         </p>
-        <p>Introducere text: </p>
-        <textarea id="introdus" rows="9" maxRows="44" placeholder="Introducere text…" style="width:100%;"></textarea>
+        <p>Introducere text 
+        <textarea id="introdus" rows="12" maxRows="44" placeholder="Introducere text…" style="width:94%;"></textarea></p>
         <button type="button" onclick="corectare()">Corectează</button>
-        <p>Textul corectat: </p>
-        <textarea id="corectat" rows="9" maxRows="44" placeholder="Textul corectat…" style="width:100%;"></textarea>
+        <p>Textul corectat
+        <textarea id="corectat" rows="12" maxRows="44" placeholder="Textul corectat…" style="width:94%;"></textarea></p>
         <button onclick="downloadFile()">Descarcă fișier</button>  
-        <p>Modificări</p>
-        <textarea id="modificari" rows="9" maxRows="44" placeholder="Modificări" style="width:100%;"></textarea>  
+        <p>Modificări
+        <textarea id="modificari" rows="9" maxRows="44" placeholder="Modificări" style="width:94%;"></textarea>  </p>
       
     <script>
     
