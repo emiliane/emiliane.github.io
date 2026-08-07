@@ -62,6 +62,7 @@
 </head>
 
 <body>
+  <p id="eJSON">-</p>
   <div class="row">
     <div class="column" style="background-color:#07a;">
       <h4 id="titluUnu"></h4>
@@ -252,7 +253,7 @@
     function adaugălistaMea() {
       document.getElementById("listaMea").style.display = "none";
       (async () => {
-        url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.txt';
+        url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.json';
         data = await fetchAsync(url);
         adaugăVideoclipuriLaÎnceput(data);
         afișeazăLista();
@@ -297,6 +298,27 @@
       } else {
         return listaNoua;
       }
+
+      // eJSON
+        try {
+          const db = JSON.parse(lista);
+
+          for (var i = 0; i < db.length; i++) {
+            if (db[i].duration) {
+              var identificator = db[i].id;
+              var nume = db[i].title;
+              var sublista = [identificator, nume];
+              listaNoua.push(sublista)
+            }
+          }
+
+          document.getElementById('eJSON').innerHTML = "damiLista";
+          return listaNoua;
+        } catch (error) {
+          // Code to handle the error
+          document.getElementById('eJSON').innerHTML = error;
+          return listaNoua;
+        }
       for (var i = 0; i < lista.length; i++) {
         if (lista[i]) {
           var element = lista[i].trim();
