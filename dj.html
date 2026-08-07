@@ -252,6 +252,7 @@
 
     function adaugălistaMea() {
       document.getElementById("listaMea").style.display = "none";
+      iaValori();
       (async () => {
         url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.json';
         data = await fetchAsync(url);
@@ -309,7 +310,7 @@
               var nume = db[i].title;
               var duration = db[i].duration;
               var start = Math.floor(Math.random() * duration / 4);
-              var stop = Math.min(fadeSeconds, Math.floor(start + fadeSeconds * 2 + ((Math.random() * duration / start))));
+              var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)));
               var sublista = [identificator, nume, duration, start, stop];
               listaNoua.push(sublista);
             }
@@ -411,7 +412,7 @@
         var info = '<div><button type="button" onclick="amestecăLista()">Amestecă</button>Urmează:</div><div id="elementeListă">';
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1;
-          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + damiButonulȘtergeVideoclip(i) + "<br>";
+          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + listaVideoclipuri[i][3] + '->' +  listaVideoclipuri[i][4] +  ':'  + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>";
         }
         info = info + "</div>";
         document.getElementById('informațieListă').innerHTML = info;
