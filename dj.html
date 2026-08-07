@@ -62,7 +62,7 @@
 </head>
 
 <body>
-  <p id="eJSON"></p>
+  <pre id="eJSON" style="white-space: pre-wrap; word-wrap: break-word;">eJSON</pre>
   <div class="row">
     <div class="column" style="background-color:#07a;">
       <h4 id="titluUnu"></h4>
@@ -115,6 +115,11 @@
   </h4>
 
   <script>
+    // debug JSON
+    function showEJSON(nume = '', eroare = '') {
+      document.getElementById('eJSON').innerHTML = document.getElementById('eJSON').innerHTML.slice(-8888) + ' - <br> - ' + JSON.stringify(nume) + ' - ' + JSON.stringify(eroare);
+    }
+
     // 2. This code loads the IFrame Player API code asynchronously.
     var tag = document.createElement('script');
 
@@ -126,6 +131,8 @@
     //    after the API code downloads.
     var playerUnu;
     var playerDoi;
+    var players = [playerUnu, playerDoi];
+    var playerInfo = {front: {player: playerUnu, info: null, tag: 'playerUnu'}, behind: {player: playerDoi, info: null, tag: 'playerDoi'}};
     var fadeSeconds;
     var precizie = 44;
     var listaVideoclipuri = [];
@@ -159,13 +166,15 @@
 
     // 4. The API will call this function when the video player is ready.
     function onPlayerReady(event) {
+      showEJSON('onPlayerReady', '-');
       playerUnu.unMute();
-      afiseaza(playerUnu, "Unu");
-      afișeazăLista();
+      playerInfo.front.player = playerUnu;
     }
+
     function onPlayerReady2(event) {
+      showEJSON('onPlayerReady2', '-');
       playerDoi.unMute();
-      afiseaza(playerDoi, "Doi");
+      playerInfo.behind.player = playerDoi;
     }
 
     // 5. The API calls this function when the player's state changes.
@@ -174,56 +183,83 @@
     var doneUnu = false;
     var doneDoi = false;
     function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.ENDED) {
-        setVideoId(playerUnu);
-        playerUnu.unMute();
+      //showEJSON('onPlayerStateChange', '-');
+      playerUnu.unMute();
+      if (event.data == YT.PlayerState.PLAYING) {
+        showEJSON('onPlayerStateChange', 'YT.PlayerState.PLAYING');
+
+      } else if (event.data == YT.PlayerState.ENDED) {
+        showEJSON('onPlayerStateChange', 'YT.PlayerState.ENDED');
+        setVideoId(playerInfo.behind);
+        var a1 = playerInfo.front;
+        var a2 = playerInfo.behind;
+        playerInfo.front = a2;
+        playerInfo.behind = a1;
       }
     }
+
     function onPlayerStateChange2(event) {
+      playerDoi.unMute();
+      showEJSON('onPlayerStateChange2', '-');
+      playerDoi.unMute();
       if (event.data == YT.PlayerState.ENDED) {
-        setVideoId(playerDoi);
-        playerDoi.unMute();
+        setVideoId(playerInfo.behind);
       }
     }
+
     function stopVideo() {
       playerUnu.stopVideo();
     }
+
     function invarte() {
-      playerUnu.playVideo();
+      showEJSON('invarte', playerInfo.front.info);
+      playerInfo.front.player.playVideo();
       bucla();
     }
 
     function setVideoId(player) {
-      var id = damiUrmătorulVideoclip();
-      if (id && player) {
-        player.cueVideoById(id);
-      }
+      var info = damiUrmătorulVideoclip();
+      var id = info[0];
+      showEJSON('setVideoId info', info);
+      player.player.cueVideoById({videoId: info[0], startSeconds: info[3], endSeconds: info[4]});
+      player.info = info;
     }
 
     function următorulVideoclip() {
-      setVideoId(damiRedorSecundar());
+      showEJSON('următorulVideoclip() info', playerInfo.front.info);
+      if (playerInfo.front.info == null) {
+        showEJSON('următorulVideoclip() info', 'null');
+        setVideoId(playerInfo.front);
+        setVideoId(playerInfo.behind);
+      } else {
+        setVideoId(playerInfo.behind);
+      }
     }
 
     function bucla() {
       try {
         iaValori();
-        afiseaza(playerUnu, "Unu");
-        afiseaza(playerDoi, "Doi");
-        ajusteazaVolum(playerUnu);
-        ajusteazaVolum(playerDoi);
+        afișează(playerInfo.front, "Unu");
+        afișează(playerInfo.behind, "Doi");
+        ajusteazaVolum(playerInfo.front);
+        ajusteazaVolum(playerInfo.behind);
         redare();
       } catch (err) {
-        document.getElementById('informație').innerHTML = err.message;
+        // document.getElementById('informație').innerHTML = err.message;
       }
       setTimeout(bucla, precizie);
     }
 
     function redare() {
-      var principal = damiRedorPrincipal();
-      var secundar = damiRedorSecundar();
-      var timpRamas = principal.getDuration() - principal.getCurrentTime();
+      // var principal = damiRedorPrincipal();
+      var principal = playerInfo.front.player;
+      // var secundar = damiRedorSecundar();
+      var secundar = playerInfo.behind.player;
+      // var timpRamas = principal.getDuration() - principal.getCurrentTime();
+      var timpRamas = playerInfo.front.player[4] - principal.getCurrentTime();
 
       if (timpRamas <= fadeSeconds) {
+        showEJSON('redare timpRamas', timpRamas)
         secundar.playVideo();
       }
     }
@@ -257,7 +293,6 @@
         url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.json';
         data = await fetchAsync(url);
         adaugăVideoclipuriLaÎnceput(data);
-        afișeazăLista();
       })();
     }
 
@@ -301,28 +336,25 @@
       }
 
       // eJSON
-        try {
-          const db = JSON.parse(lista);
+      try {
+        const db = JSON.parse(lista);
 
-          for (var i = 0; i < db.length; i++) {
-            if (db[i].duration) {
-              var identificator = db[i].id;
-              var nume = db[i].title;
-              var duration = db[i].duration;
-              var start = Math.floor(Math.random() * duration / 4);
-              var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)));
-              var sublista = [identificator, nume, duration, start, stop];
-              listaNoua.push(sublista);
-            }
+        for (var i = 0; i < db.length; i++) {
+          if (db[i].duration) {
+            var identificator = db[i].id;
+            var nume = db[i].title;
+            var duration = db[i].duration;
+            var start = Math.floor(Math.random() * duration / 4);
+            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)));
+            var sublista = [identificator, nume, duration, start, stop];
+            listaNoua.push(sublista);
           }
-
-          document.getElementById('eJSON').innerHTML = "damiLista";
-          return listaNoua;
-        } catch (error) {
-          // Code to handle the error
-          document.getElementById('eJSON').innerHTML = error;
-          return listaNoua;
         }
+        return listaNoua;
+      } catch (err) {
+        //document.getElementById('eJSON').innerHTML = err.message;
+        return listaNoua;
+      }
       for (var i = 0; i < lista.length; i++) {
         if (lista[i]) {
           var element = lista[i].trim();
@@ -339,71 +371,88 @@
       return listaNoua;
     }
 
+    function listaJSON(lista) {
+      var listaNoua = [];
+      try {
+        const db = JSON.parse(lista);
+
+        for (var i = 0; i < db.length; i++) {
+          if (db[i].duration) {
+            var identificator = db[i].id;
+            var nume = db[i].title;
+            var duration = db[i].duration;
+            var start = Math.floor(Math.random() * duration / 4);
+            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)));
+            var sublista = [identificator, nume, duration, start, stop];
+            listaNoua.push(sublista);
+          }
+        }
+
+        document.getElementById('eJSON').innerHTML = "damiLista";
+        return listaNoua;
+      } catch (error) {
+        document.getElementById('eJSON').innerHTML = error;
+        return listaNoua;
+      }
+
+      return listaNoua;
+    }
+
     function damiUrmătorulVideoclip() {
       try {
         let videoclip = listaVideoclipuri.shift();
         listaVideoclipuri.push(videoclip);
         afișeazăLista();
-        return videoclip[0];
+        return videoclip;
       } catch (error) {
-        return null;
+        return [null];
       }
-    }
-
-    function damiRedorPrincipal() {
-      var redor;
-      if (playerUnu.getPlayerState() == YT.PlayerState.PLAYING) {
-        redor = playerUnu;
-      } else {
-        redor = playerDoi;
-      }
-      return redor;
-    }
-
-    function damiRedorSecundar() {
-      var redor;
-      if (playerUnu.getPlayerState() == 1) {
-        redor = playerDoi;
-      } else {
-        redor = playerUnu;
-      }
-      return redor;
     }
 
     function ajusteazaVolum(redor) {
       var volum;
-      var timpActual = redor.getCurrentTime();
-      var timpRamas = redor.getDuration() - timpActual;
+      var timpActual = redor.player.getCurrentTime();
+      var timpScurs = timpActual - redor.info[3];
+      var timpRamas = redor.info[4] - timpActual;
 
       if (timpRamas <= fadeSeconds) {
         var percent = timpRamas / fadeSeconds;
         volum = percent * 100;
-      } else if (timpActual <= fadeSeconds) {
-        var percent = timpActual / fadeSeconds;
+      } else if (timpScurs <= fadeSeconds) {
+        var percent = timpScurs / fadeSeconds;
         volum = percent * 100;
       } else {
         volum = 100;
       }
-      redor.setVolume(volum);
+      redor.player.setVolume(volum);
     }
 
-    function afiseaza(redor, numar) {
-      var titlu = document.querySelector("#player" + numar).title;
+    function afișează(redor, numar) {
+
+      var titlu = document.querySelector("#" + redor.tag).title;
 
       if (titlu == "YouTube video player") {
-        redor.cueVideoById(damiUrmătorulVideoclip());
+        var următorulVideoclip = damiUrmătorulVideoclip();
+        document.getElementById('eJSON').innerHTML = document.getElementById('eJSON').innerHTML.slice(-388) + următorulVideoclip;
+        redor.cueVideoById({videoId: următorulVideoclip[0], startSeconds: următorulVideoclip[3], endSeconds: următorulVideoclip[4]});
         redor.unMute();
+        return următorulVideoclip;
       }
 
-      var volum = redor.getVolume();
-      var timp = redor.getCurrentTime();
-      var timpRamas = redor.getDuration() - timp;
+      try {
+        var volum = redor.player.getVolume();
+        var timpActual = redor.player.getCurrentTime();
+        var timpScurs = timpActual - redor.info[3];
+        var timpRamas = redor.info[4] - timpActual;
 
-      document.getElementById('titlu' + numar).innerHTML = titlu;
-      document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timp.toFixed(2);
+        document.getElementById('titlu' + numar).innerHTML = titlu;
+        document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timpActual.toFixed(0);
 
-      if (redor.getPlayerState() == YT.PlayerState.PLAYING) {
-        document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(2) + " timp scurs: " + convertStoMs(timp.toFixed(0));
+        if (redor.player.getPlayerState() == YT.PlayerState.PLAYING) {
+          document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(0) + " timp actual: " + convertStoMs(timpActual.toFixed(0)) + " timp scurs: " + convertStoMs(timpScurs.toFixed(0)) + ' din ' + redor.info[3] + '->' + redor.info[4] + ':' + redor.info[2];
+        }
+      } catch (err) {
+        //document.getElementById('informație').innerHTML = err.message;
       }
     }
 
@@ -412,11 +461,11 @@
         var info = '<div><button type="button" onclick="amestecăLista()">Amestecă</button>Urmează:</div><div id="elementeListă">';
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1;
-          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + ' ' + listaVideoclipuri[i][3] + '->' +  listaVideoclipuri[i][4] +  ':'  + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>";
+          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + ' ' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + ':' + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>";
         }
         info = info + "</div>";
         document.getElementById('informațieListă').innerHTML = info;
-      } catch (error) {
+      } catch (err) {
       }
     }
 
