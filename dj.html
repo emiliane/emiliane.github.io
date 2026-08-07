@@ -412,7 +412,7 @@
         var info = '<div><button type="button" onclick="amestecăLista()">Amestecă</button>Urmează:</div><div id="elementeListă">';
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1;
-          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + listaVideoclipuri[i][3] + '->' +  listaVideoclipuri[i][4] +  ':'  + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>";
+          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + ' ' + listaVideoclipuri[i][3] + '->' +  listaVideoclipuri[i][4] +  ':'  + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>";
         }
         info = info + "</div>";
         document.getElementById('informațieListă').innerHTML = info;
