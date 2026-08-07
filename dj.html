@@ -309,7 +309,7 @@
               var nume = db[i].title;
               var duration = db[i].duration;
               var start = Math.floor(Math.random() * duration / 4);
-              var stop = Math.min(fadeSeconds, Math.floor(start + fadeSeconds * 2 + ((Math.random() * duration / b))));
+              var stop = Math.min(fadeSeconds, Math.floor(start + fadeSeconds * 2 + ((Math.random() * duration / start))));
               var sublista = [identificator, nume, duration, start, stop];
               listaNoua.push(sublista);
             }
