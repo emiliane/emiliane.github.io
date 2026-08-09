@@ -361,6 +361,12 @@
       fadeSeconds = document.getElementById("estompeaza").value
     }
 
+    function adaugăVideoclipuriInițial(lista) {
+      listaVideoclipuri = listaJSON(lista).concat(listaVideoclipuri)
+      listaVideoclipuri = listaVideoclipuri.filter(elm => elm)
+      afișeazăLista()
+    }
+
     function adaugăVideoclipuriLaÎnceput(lista) {
       if (!lista) {
         lista = document.getElementById("lista").value
@@ -385,7 +391,7 @@
       (async () => {
         url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.json'
         data = await fetchAsync(url)
-        adaugăVideoclipuriLaÎnceput(data)
+        adaugăVideoclipuriInițial(data)
       })()
     }
 
@@ -428,26 +434,6 @@
         return listaNoua
       }
 
-      // eJSON
-      try {
-        const db = JSON.parse(lista)
-
-        for (var i = 0; i < db.length; i++) {
-          if (db[i].duration) {
-            var identificator = db[i].id
-            var nume = db[i].title
-            var duration = db[i].duration
-            var start = Math.floor(Math.random() * duration / 4)
-            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
-            var sublista = [identificator, nume, duration, start, stop]
-            listaNoua.push(sublista)
-          }
-        }
-        return listaNoua
-      } catch (err) {
-        //console.log(err.message)
-        return listaNoua
-      }
       for (var i = 0; i < lista.length; i++) {
         if (lista[i]) {
           var element = lista[i].trim()
