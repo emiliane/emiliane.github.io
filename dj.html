@@ -182,40 +182,31 @@
     var doneUnu = false
     var doneDoi = false
     function onPlayerStateChange(event) {
-
       playerUnu.unMute()
-      if (event.data == YT.PlayerState.ENDED) {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState.ENDED')
-        loadNext()
-      } else if (event.data == YT.PlayerState.PLAYING) {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState.PLAYING')
-      } else if (event.data == YT.PlayerState.PAUSED) {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState.PAUSED')
-      } else if (event.data == YT.PlayerState.BUFFERING) {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState.BUFFERING')
-      } else if (event.data == YT.PlayerState.CUED) {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState.CUED')
-      } else {
-        console.log('onPlayerStateChange 1', 'YT.PlayerState unstarted')
-      }
+      resolveState(event, '1')
     }
 
     function onPlayerStateChange2(event) {
       playerDoi.unMute()
+      resolveState(event, '2')
+    }
 
+    function resolveState(event, un) {
+      console.log(event)
+      un = ' ' + un
       if (event.data == YT.PlayerState.ENDED) {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState.ENDED')
+        console.log(event, un, 'YT.PlayerState.ENDED')
         loadNext()
       } else if (event.data == YT.PlayerState.PLAYING) {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState.PLAYING')
+        console.log(event, un, 'YT.PlayerState.PLAYING')
       } else if (event.data == YT.PlayerState.PAUSED) {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState.PAUSED')
+        console.log(event, un, 'YT.PlayerState.PAUSED')
       } else if (event.data == YT.PlayerState.BUFFERING) {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState.BUFFERING')
+        console.log(event, un, 'YT.PlayerState.BUFFERING')
       } else if (event.data == YT.PlayerState.CUED) {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState.CUED')
+        console.log(event, un, 'YT.PlayerState.CUED')
       } else {
-        console.log('onPlayerStateChange 2', 'YT.PlayerState unstarted')
+        console.log(event, un, 'YT.PlayerState unstarted')
       }
     }
 
@@ -245,9 +236,26 @@
     }
 
     function changePrincipal() {
+      var myInfo1
+      var myInfo2
+      var myTag1
+      var myTag2
       if (playerInfo.principal == 1) {
         playerInfo.principal = 2
         playerInfo.secundar = 1
+
+        myInfo1 = playerInfo.front.info
+        myInfo2 = playerInfo.behind.info
+
+        playerInfo.front.info = myInfo1
+        playerInfo.behind.info = myInfo2
+
+        myTag1 = playerInfo.front.tag
+        myTag2 = playerInfo.behind.tag
+
+        playerInfo.front.tag = myTag1
+        playerInfo.behind.tag = myTag2
+
       } else {
         playerInfo.principal = 1
         playerInfo.secundar = 2
@@ -290,7 +298,7 @@
 
     function autostart() {
       adaugălistaMea()
-      amestecăLista()
+      // amestecăLista()
 
       try {
         următorulVideoclip()
@@ -446,7 +454,8 @@
             var nume = db[i].title
             var duration = db[i].duration
             var start = Math.floor(Math.random() * duration / 4)
-            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
+            var stop = Math.min(duration, Math.floor(44 + start + fadeSeconds * 2 + (Math.random() * duration / start)))
+            stop = Math.min(duration, stop + 21)
             var sublista = [identificator, nume, duration, start, stop]
             listaNoua.push(sublista)
           }
