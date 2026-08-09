@@ -460,15 +460,19 @@
             var identificator = db[i].id
             var nume = db[i].title
             var duration = db[i].duration
+
             var start = Math.floor(Math.random() * duration / 4)
             var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
 
             var lung = stop - start
-            if (lung < fadeSeconds * 2) {
-              start = Math.max(0, start - floor(Math.random() * duration / 4))
+            if (lung <= ((fadeSeconds * 2) + 2)) {
+              start = start - Math.floor(Math.random() * duration / 4)
+              stop = stop + 10
             }
 
-            stop = Math.min(duration, stop)
+            start = Math.max(start, 0)
+            stop = Math.min(stop, duration)
+
             var sublista = [identificator, nume, duration, start, stop]
             listaNoua.push(sublista)
           }
@@ -558,8 +562,8 @@
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1
           info += numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0])
-          info += ' (' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + ')'
           info += ' [' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + ':' + listaVideoclipuri[i][2] + ']'
+          info += ' (' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + ')'
           info += damiButonulȘtergeVideoclip(i) + "<br>"
         }
         info = info + "</div>"
