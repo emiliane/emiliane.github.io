@@ -439,8 +439,7 @@
             var duration = db[i].duration
             var start = Math.floor(Math.random() * duration / 4)
             var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
-            //var sublista = [identificator, nume, duration, start, stop]
-            var sublista = [identificator, nume, duration, 0, duration]
+            var sublista = [identificator, nume, duration, start, stop]
             listaNoua.push(sublista)
           }
         }
@@ -476,8 +475,8 @@
             var nume = db[i].title
             var duration = db[i].duration
             var start = Math.floor(Math.random() * duration / 4)
-            var stop = Math.min(duration, Math.floor(44 + start + fadeSeconds * 2 + (Math.random() * duration / start)))
-            stop = Math.min(duration, stop + 21)
+            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
+            stop = Math.min(duration, stop)
             var sublista = [identificator, nume, duration, start, stop]
             listaNoua.push(sublista)
           }
