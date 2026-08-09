@@ -1,8 +1,3 @@
-// Error during conversion: Conversion failed: ReplicateError Details:
-title: Insufficient credit
-status: 402
-detail: You have insufficient credit to run this model. Go to https://replicate.com/account/billing#billing to purchase credit. Once you purchase credit, please wait a few minutes before trying again.
-
 //import getYoutubePlayListInfo from 'https://raw.githubusercontent.com/emiliane/Youtube-Playlist-Info/refs/heads/main/youtube-playlist-info.js';
 //import ip6 from 'https://cdn.jsdelivr.net/gh/elgs/ip6/ip6.js';
 
