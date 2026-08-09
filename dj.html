@@ -128,7 +128,7 @@
     var playerUnu
     var playerDoi
     var players = [playerUnu, playerDoi]
-    var playerInfo = {front: {player: playerUnu, info: null, tag: 'playerUnu'}, behind: {player: playerDoi, info: null, tag: 'playerDoi'}, principal: 1, secundar: 2}
+    var playerInfo = {front: {player: playerUnu, info: null, isPlaying: false, tag: 'playerUnu'}, behind: {player: playerDoi, info: null, isPlaying: false, tag: 'playerDoi'}, principal: 1, secundar: 2}
     var fadeSeconds
     var precizie = 44
     var listaVideoclipuri = []
@@ -195,22 +195,37 @@
       console.log(event)
       un = ' ' + un
       if (event.data == YT.PlayerState.ENDED) {
-        console.log(event, un, 'YT.PlayerState.ENDED')
-        loadNext()
+        console.log(event, un, 'ENDED')
+        if (playerInfo.front.isPlaying || playerInfo.behind.isPlaying) {
+          loadNext()
+        }
       } else if (event.data == YT.PlayerState.PLAYING) {
-        console.log(event, un, 'YT.PlayerState.PLAYING')
+        console.log(event, un, 'PLAYING')
       } else if (event.data == YT.PlayerState.PAUSED) {
-        console.log(event, un, 'YT.PlayerState.PAUSED')
+        console.log(event, un, 'PAUSED')
       } else if (event.data == YT.PlayerState.BUFFERING) {
-        console.log(event, un, 'YT.PlayerState.BUFFERING')
+        console.log(event, un, 'BUFFERING')
       } else if (event.data == YT.PlayerState.CUED) {
-        console.log(event, un, 'YT.PlayerState.CUED')
+        console.log(event, un, 'CUED')
+        shift()
       } else {
-        console.log(event, un, 'YT.PlayerState unstarted')
+        console.log(event, un, 'unstarted')
+      }
+
+      console.log(event, un, 'isPlaying', 'front', playerInfo.front.isPlaying)
+      console.log(event, un, 'isPlaying', 'behind', playerInfo.behind.isPlaying)
+      if (event.data == YT.PlayerState.PLAYING) {
+        playerInfo.front.isPlaying = true
+        playerInfo.behind.isPlaying = true
+        console.log(event, un, 'PLAYING')
+      } else {
+        playerInfo.front.isPlaying = false
+        playerInfo.behind.isPlaying = false
       }
     }
 
     function loadNext() {
+      console.log('setVideoId', 'loadNext')
       setVideoId(playerInfo.front)
       changePrincipal()
     }
@@ -255,7 +270,6 @@
 
         playerInfo.front.tag = myTag1
         playerInfo.behind.tag = myTag2
-
       } else {
         playerInfo.principal = 1
         playerInfo.secundar = 2
@@ -281,17 +295,24 @@
 
     function setVideoId(player) {
       var info = damiUrmătorulVideoclip()
-      console.log('setVideoId info', info)
+      if (info) {
+        console.log('setVideoId info if', info)
+        player.player.cueVideoById({videoId: info[0], startSeconds: info[3], endSeconds: info[4]})
+        player.info = info
+      } else {
+        console.log('setVideoId info else', info)
+      }
       var id = info[0]
-      player.player.cueVideoById({videoId: info[0], startSeconds: info[3], endSeconds: info[4]})
-      player.info = info
     }
 
     function următorulVideoclip() {
       if (playerInfo.front.info == null) {
+        console.log('setVideoId', 'loadNext NULL DA')
         setVideoId(playerInfo.front)
+        shift()
         setVideoId(playerInfo.behind)
       } else {
+        console.log('setVideoId', 'loadNext NULL NU')
         setVideoId(playerInfo.behind)
       }
     }
@@ -418,7 +439,8 @@
             var duration = db[i].duration
             var start = Math.floor(Math.random() * duration / 4)
             var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
-            var sublista = [identificator, nume, duration, start, stop]
+            //var sublista = [identificator, nume, duration, start, stop]
+            var sublista = [identificator, nume, duration, 0, duration]
             listaNoua.push(sublista)
           }
         }
@@ -473,13 +495,18 @@
 
     function damiUrmătorulVideoclip() {
       try {
-        let videoclip = listaVideoclipuri.shift()
-        listaVideoclipuri.push(videoclip)
-        afișeazăLista()
-        return videoclip
+        return listaVideoclipuri[0]
       } catch (error) {
+        console.log(error)
         return [null]
       }
+    }
+
+    function shift() {
+      listaVideoclipuri.push(listaVideoclipuri[0])
+      listaVideoclipuri.shift()
+      afișeazăLista()
+      console.log('shifted')
     }
 
     function ajusteazaVolum(redor) {
@@ -505,11 +532,13 @@
       var titlu = document.querySelector("#" + redor.tag).title
 
       if (titlu == "YouTube video player") {
-        var următorulVideoclip = damiUrmătorulVideoclip()
-        console.log(document.getElementById('eJSON').innerHTML.slice(-388) + următorulVideoclip)
-        redor.cueVideoById({videoId: următorulVideoclip[0], startSeconds: următorulVideoclip[3], endSeconds: următorulVideoclip[4]})
-        redor.unMute()
-        return următorulVideoclip
+        console.log('YouTube video player', 'auto')
+        //  var următorulVideoclip = damiUrmătorulVideoclip()
+        // redor.cueVideoById({videoId: următorulVideoclip[0], startSeconds: următorulVideoclip[3], endSeconds: următorulVideoclip[4]})
+        //redor.unMute()
+        //return următorulVideoclip
+      } else {
+        //console.log('YouTube video player', 'stop')
       }
 
       try {
