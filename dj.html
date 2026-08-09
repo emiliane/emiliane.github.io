@@ -544,8 +544,7 @@
         if (redor.player.getPlayerState() == YT.PlayerState.PLAYING) {
           var a = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(0) + " timp actual: " + convertStoMs(timpActual.toFixed(0)) + " timp scurs: " + convertStoMs(timpScurs.toFixed(0))
           a += ' din ' + (redor.info[4] - redor.info[3])
-          a += ' ' + redor.info[3] + '->' + redor.info[4] + ':' + redor.info[2]
-          a += '(' + (redor.info[4] - redor.info[3]) + ')'
+          a += ' [' + redor.info[3] + '->' + redor.info[4] + ':' + redor.info[2] + ']'
           document.getElementById('informație').innerHTML = a
         }
       } catch (err) {
@@ -559,8 +558,8 @@
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1
           info += numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0])
-          info += ' [' + listaVideoclipuri[i][3] + ' -> ' + listaVideoclipuri[i][4] + ' : ' + listaVideoclipuri[i][2]
-          info += ' (' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + ')' + ']'
+          info += ' (' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + ')'
+          info += ' [' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + ':' + listaVideoclipuri[i][2] + ']'
           info += damiButonulȘtergeVideoclip(i) + "<br>"
         }
         info = info + "</div>"
