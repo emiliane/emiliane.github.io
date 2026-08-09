@@ -462,6 +462,12 @@
             var duration = db[i].duration
             var start = Math.floor(Math.random() * duration / 4)
             var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
+
+            var lung = stop - start
+            if (lung < fadeSeconds * 2) {
+              start = Math.max(0, start - floor(Math.random() * duration / 4))
+            }
+
             stop = Math.min(duration, stop)
             var sublista = [identificator, nume, duration, start, stop]
             listaNoua.push(sublista)
@@ -536,7 +542,7 @@
         document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timpActual.toFixed(0)
 
         if (redor.player.getPlayerState() == YT.PlayerState.PLAYING) {
-          document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(0) + " timp actual: " + convertStoMs(timpActual.toFixed(0)) + " timp scurs: " + convertStoMs(timpScurs.toFixed(0)) + ' din ' + redor.info[3] + '->' + redor.info[4] + ':' + redor.info[2]
+          document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(0) + " timp actual: " + convertStoMs(timpActual.toFixed(0)) + " timp scurs: " + convertStoMs(timpScurs.toFixed(0)) + ' din ' + redor.info[3] + '->' + redor.info[4] + '(' + (redor.info[4] - redor.info[3]) + '):' + redor.info[2]
         }
       } catch (err) {
         //document.getElementById('informație').innerHTML = err.message
@@ -548,7 +554,7 @@
         var info = '<div><button type="button" onclick="amestecăLista()">Amestecă</button>Urmează:</div><div id="elementeListă">'
         for (let i = 0; i < listaVideoclipuri.length; i++) {
           var numar = i + 1
-          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + ' ' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + ':' + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>"
+          info = info + numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0]) + ' ' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + '(' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + '):' + listaVideoclipuri[i][2] + damiButonulȘtergeVideoclip(i) + "<br>"
         }
         info = info + "</div>"
         document.getElementById('informațieListă').innerHTML = info
