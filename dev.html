@@ -1,0 +1,539 @@
+<!--DOCTYPE html-->
+<meta charset="utf-8">
+ 
+<style type="text/css">
+  body {
+    font: normal normal 25px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+    color: #0A00A0;
+    padding: 0 40px 40px 40px;
+    background: linear-gradient(rgba(222, 222, 222, 0.888), rgba(111, 111, 111, 0.555)),
+      url(https://themes.googleusercontent.com/image?id=16p0DhIQDIoTZOUyiLjbBSajoCvlXtai8rSbZiLnXfEwdwTFgFVIeDYQBf3S_b5BpMAfo);
+    background-size: cover
+  }
+ 
+  * {
+    box-sizing: border-box
+  }
+ 
+  .row {
+    display: flex
+  }
+ 
+  /* Create two equal columns that sits next to each other */
+  .column {
+    flex: 50%;
+    padding: 10px
+  }
+ 
+  input,
+  button,
+  textarea,
+  .scris {
+    font: normal 25px Helvetica;
+    background-color: rgba(44, 0, 0, 0.1);
+    border-radius: 4px;
+    color: #0A00A0
+  }
+ 
+  #elementeListă {
+    max-height: 11lh;
+    overflow: auto
+  }
+ 
+  div::-webkit-scrollbar {
+    width: 1ch
+  }
+ 
+  div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+    border-radius: 10px
+  }
+ 
+  div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8)
+  }
+</style>
+ 
+<html>
+ 
+<head>
+  <title>Jucător de discuri</title>
+</head>
+ 
+<body>
+  <pre id="eJSON" style="white-space: pre-wrap; word-wrap: break-word"></pre>
+  <div class="row">
+    <div class="column" style="background-color:#07a">
+      <h4 id="titluUnu"></h4>
+      <div id="playerUnu"></div><!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+      <div id="informațieUnu"></div>
+    </div>
+    <div class="column" style="background-color:#a70">
+      <h4 id="titluDoi"></h4>
+      <div id="playerDoi"></div><!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+      <div id="informațieDoi"></div>
+    </div>
+  </div>
+ 
+  <h4 class="scris">
+    <div>
+      <button type="button" onclick="invarte()">Învârte</button>
+      <button type="button" onclick="următorulVideoclip()">Următor</button>
+      <div id="detaliiEstompeaza">Estompează:<input type="number" id="estompeaza" value="4" min="0" style="width:94px;">secunde</div>
+      <button type="button" id="listaMea" onclick="adaugălistaMea()">Lista mea</button>
+      <br>
+    </div>
+    <div id="informație"></div><br>
+    <div id="embed"></div><br>
+    <div id="informațieListă"></div><br>
+    <div>Adaugă videoclipuri după identificator cu sau fără nume:</div>
+    <textarea id="lista" rows="4" maxRows="11"
+      placeholder="Identificator Nume&#10&#10A1B2C3D4E5F Unu&#10G1H2I3J4K5L Doi" style="width:100%"></textarea>
+    <br>
+    <button type="button" onclick="adaugăVideoclipuriLaÎnceput()">Următor</button>
+    <button type="button" onclick="adaugăVideoclipuriLaSfârșit()">În coadă</button>
+    <br>
+    <br>
+    <div>
+      <button id="butonUtil" onclick="divUtil()">Informații utile</button>
+      <div id="informațiiUtile" style="display: none">
+        <p>Folosind <a href="https://apps.microsoft.com/detail/9n0dx20hk701">Windows Terminal</a> pentru generare
+          lista.txt conținând lista videoclipurilor listei de redare cu <a href="https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation">yt-dlp</a>.
+        </p>
+        <p>.\yt-dlp.exe --print "%(id)s %(title)s | %(playlist_index)s" --flat-playlist
+          "https://www.youtube.com/playlist?list=PLycloV5Iov5EKRJhDaMmDTA-uMaasis-S" > lista.txt
+        </p>
+      </div>
+    </div>
+    <div id="depanare"></div>
+    <div><a href="https://emisarcrai.blogspot.com/p/jucator-de-discuri.html">Blogger</a> <a href="https://emiliane.github.io/">GitHub</a></div>
+  </h4>
+ 
+  <script>
+    verificaEstopare()
+ 
+    // 2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script')
+ 
+    tag.src = "https://www.youtube.com/iframe_api"
+    var firstScriptTag = document.getElementsByTagName('script')[0]
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+ 
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    var playerUnu;
+    var playerDoi;
+    var playerUnuInfo = [];
+    var playerDoiInfo = [];
+    var fadeSeconds;
+    var precizie = 44;
+    var listaVideoclipuri = [];
+ 
+    function onYouTubeIframeAPIReady() {
+      playerUnu = new YT.Player('playerUnu', {
+        height: '444',
+        width: '100%',
+        host: 'https://www.youtube-nocookie.com',
+        playerVars: {
+          'playsinline': 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      })
+      playerDoi = new YT.Player('playerDoi', {
+        height: '444',
+        width: '100%',
+        host: 'https://www.youtube-nocookie.com',
+        playerVars: {
+          'playsinline': 1
+        },
+        events: {
+          'onReady': onPlayerReady2,
+          'onStateChange': onPlayerStateChange2
+        }
+      })
+    }
+ 
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+      playerUnu.unMute();
+      afiseaza(playerUnu, "Unu");
+      afișeazăLista();
+    }
+    function onPlayerReady2(event) {
+      playerDoi.unMute();
+      afiseaza(playerDoi, "Doi");
+    }
+ 
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    var doneUnu = false
+    var doneDoi = false
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.ENDED) {
+        setVideoId(playerUnu);
+        playerUnu.unMute();
+      }
+    }
+    function onPlayerStateChange2(event) {
+      if (event.data == YT.PlayerState.ENDED) {
+        setVideoId(playerDoi);
+        playerDoi.unMute();
+      }
+    }
+    function stopVideo() {
+      playerUnu.stopVideo();
+    }
+    function invarte() {
+      playerUnu.playVideo();
+      bucla();
+    }
+ 
+    function setVideoId(player) {
+      var videoclip = damiUrmătorulVideoclip();
+      var id = videoclip[0]
+      if (id && player) {
+        var start = videoclip[3]
+        var end = videoclip[4]
+        player.cueVideoById({videoId: id, startSeconds: start, endSeconds: end});
+      }
+    }
+ 
+    function următorulVideoclip() {
+      setVideoId(damiRedorSecundar());
+    }
+ 
+    function bucla() {
+      try {
+        iaValori();
+        afiseaza(playerUnu, "Unu");
+        afiseaza(playerDoi, "Doi");
+        ajusteazaVolum(playerUnu);
+        ajusteazaVolum(playerDoi);
+        redare();
+      } catch (err) {
+        document.getElementById('informație').innerHTML = err.message;
+      }
+      setTimeout(bucla, precizie);
+    }
+ 
+    function redare() {
+      var principal = damiRedorPrincipal();
+      var secundar = damiRedorSecundar();
+      var startSeconds = 0
+      var endSeconds = startSeconds + (2 * fadeSeconds) + 1
+      var timpRamas = endSeconds - principal[0].getCurrentTime();
+      // console.log(principal[1])
+ 
+      if (timpRamas <= fadeSeconds) {
+        secundar.playVideo();
+      }
+    }
+ 
+    function iaValori() {
+      fadeSeconds = document.getElementById("estompeaza").value
+    }
+ 
+    function adaugăVideoclipuriInițial(lista) {
+      listaVideoclipuri = listaJSON(lista).concat(listaVideoclipuri)
+      listaVideoclipuri = listaVideoclipuri.filter(elm => elm)
+      afișeazăLista()
+    }
+ 
+    function adaugăVideoclipuriLaÎnceput(lista) {
+      if (!lista) {
+        lista = document.getElementById("lista").value
+      }
+      listaVideoclipuri = damiLista(lista).concat(listaVideoclipuri)
+      listaVideoclipuri = listaVideoclipuri.filter(elm => elm)
+      document.getElementById("lista").value = ""
+      afișeazăLista()
+    }
+ 
+    function adaugăVideoclipuriLaSfârșit() {
+      lista = document.getElementById("lista").value
+      listaVideoclipuri = listaVideoclipuri.concat(damiLista(lista))
+      listaVideoclipuri = listaVideoclipuri.filter(elm => elm)
+      document.getElementById("lista").value = ""
+      afișeazăLista()
+    }
+ 
+    function adaugălistaMea() {
+      document.getElementById("listaMea").style.display = "none"
+      iaValori();
+      (async () => {
+        url = 'https://raw.githubusercontent.com/emiliane/emiliane.github.io/refs/heads/main/lista.json'
+        data = await fetchAsync(url)
+        adaugăVideoclipuriInițial(data)
+      })()
+    }
+ 
+    async function fetchAsync(url) {
+      let response = await fetch(url)
+      let data = await response.text()
+      return data
+    }
+ 
+    function amestecăLista() {
+      listaVideoclipuri = shuffle(listaVideoclipuri)
+      afișeazăLista()
+    }
+ 
+    function shuffle(array) {
+      var copy = [], n = array.length, i
+ 
+      // While there remain elements to shuffle&#8230;
+      while (n) {
+ 
+        // Pick a remaining element&#8230;
+        i = Math.floor(Math.random() * array.length)
+ 
+        // If not already shuffled, move it to the new array.
+        if (i in array) {
+          copy.push(array[i])
+          delete array[i]
+          n--
+        }
+      }
+ 
+      return copy
+    }
+ 
+    function damiLista(lista) {
+      var listaNoua = []
+      if (lista) {
+        lista = lista.trim().split(/\r?\n/)
+      } else {
+        return listaNoua
+      }
+ 
+      for (var i = 0; i < lista.length; i++) {
+        if (lista[i]) {
+          var element = lista[i].trim()
+          var identificator = element.substring(0, element.indexOf(' '))
+          var nume = element.substring(element.indexOf(' ') + 1)
+          if (identificator == "") {
+            identificator = element
+            nume = "Fără nume"
+          }
+          var sublista = [identificator, nume]
+          listaNoua.push(sublista)
+        }
+      }
+      return listaNoua
+    }
+ 
+    function listaJSON(lista) {
+      var listaNoua = []
+      try {
+        const db = JSON.parse(lista)
+ 
+        for (var i = 0; i < db.length; i++) {
+          if (db[i].duration) {
+            var identificator = db[i].id
+            var nume = db[i].title
+            var duration = db[i].duration
+ 
+            var start = Math.floor(Math.random() * duration / 4)
+            var stop = Math.min(duration, Math.floor(start + fadeSeconds * 2 + (Math.random() * duration / start)))
+ 
+            var lung = stop - start
+            if (lung <= ((fadeSeconds * 2) + 2)) {
+              start = start - Math.floor(Math.random() * duration / 4)
+              stop = stop + 10
+            }
+ 
+            start = Math.max(start, 0)
+            stop = Math.min(stop, duration)
+ 
+            var sublista = [identificator, nume, duration, start, stop]
+            listaNoua.push(sublista)
+          }
+        }
+ 
+        console.log("damiLista")
+        return listaNoua
+      } catch (error) {
+        console.log(error)
+        return listaNoua
+      }
+ 
+      return listaNoua
+    }
+ 
+    function damiUrmătorulVideoclip() {
+      try {
+        let videoclip = listaVideoclipuri.shift();
+        listaVideoclipuri.push(videoclip);
+        afișeazăLista();
+        console.log(videoclip)
+        return videoclip;
+      } catch (error) {
+        return null;
+      }
+    }
+ 
+    function damiRedorPrincipal() {
+      var redor;
+      var info
+      if (playerUnu.getPlayerState() == YT.PlayerState.PLAYING) {
+        redor = playerUnu;
+        info = playerUnuInfo
+      } else {
+        redor = playerDoi;
+        info = playerDoiInfo
+      }
+      return [redor, info];
+    }
+ 
+    function damiRedorSecundar() {
+      var redor;
+      var info
+      if (playerUnu.getPlayerState() == 1) {
+        redor = playerDoi;
+        info = playerDoiInfo
+      } else {
+        redor = playerUnu;
+        info = playerUnuInfo
+      }
+      return [redor, info];
+    }
+ 
+    function ajusteazaVolum(redor) {
+      var volum;
+      var timpActual = redor.getCurrentTime();
+      var timpRamas = redor.getDuration() - timpActual;
+ 
+      if (timpRamas <= fadeSeconds) {
+        var percent = timpRamas / fadeSeconds
+        volum = percent * 100
+      } else if (timpActual <= fadeSeconds) {
+        var percent = timpActual / fadeSeconds
+        volum = percent * 100
+      } else {
+        volum = 100
+      }
+      redor.setVolume(volum);
+    }
+ 
+    function afiseaza(redor, numar) {
+      var titlu = document.querySelector("#player" + numar).title;
+ 
+      if (titlu == "YouTube video player") {
+        var videoclip = damiUrmătorulVideoclip();
+        var id = videoclip[0]
+        var start = videoclip[3]
+        var end = videoclip[4]
+        redor.cueVideoById({videoId: id, startSeconds: start, endSeconds: end});
+        redor.unMute();
+      }
+ 
+      var volum = redor.getVolume();
+      var timp = redor.getCurrentTime();
+      var timpRamas = redor.getDuration() - timp;
+ 
+      document.getElementById('titlu' + numar).innerHTML = titlu;
+      document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timp.toFixed(2);
+ 
+      if (redor.getPlayerState() == YT.PlayerState.PLAYING) {
+        document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(2) + " timp scurs: " + convertStoMs(timp.toFixed(0));
+      }
+    }
+ 
+    function afișeazăLista() {
+      try {
+        var info = '<div><button type="button" onclick="amestecăLista()">Amestecă</button>Urmează:</div><div id="elementeListă">'
+        for (let i = 0; i < listaVideoclipuri.length; i++) {
+          var numar = i + 1
+          info += numar + ": " + hrefLink(listaVideoclipuri[i][1], listaVideoclipuri[i][0])
+          info += ' [' + listaVideoclipuri[i][3] + '->' + listaVideoclipuri[i][4] + ':' + listaVideoclipuri[i][2] + ']'
+          info += ' (' + (listaVideoclipuri[i][4] - listaVideoclipuri[i][3]) + ')'
+          info += damiButonulȘtergeVideoclip(i) + "<br>"
+        }
+        info = info + "</div>"
+        document.getElementById('informațieListă').innerHTML = info
+      } catch (err) {
+      }
+    }
+ 
+    function hrefLink(name, youtubeID) {
+      nocookie = '<a href="https://www.youtube-nocookie.com/embed/' + youtubeID + '" target="_blank">' + youtubeID + '</a>'
+      script = '<a href="javascript:iframeEmbed(\'' + youtubeID + '\', \'' + name + '\')">' + name + '</a>'
+      hrefs = script + ' [' + nocookie + ']'
+      return hrefs
+    }
+ 
+    function iframeEmbed(youtubeID, name) {
+      htmlIframe = '<iframe width="100%" src="https://www.youtube-nocookie.com/embed/' + youtubeID + '/" title="' + name + '" frameborder="0" allow="accelerometer autoplay clipboard-write encrypted-media gyroscope picture-in-picture web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+      document.getElementById('embed').innerHTML = htmlIframe
+    }
+ 
+    function damiButonulPrimulVideoclip(număr) {
+      var a = ' <button type="button" onclick="mutăPrimulVideoclip(' + număr + ')">primul</button>'
+      return a
+    }
+ 
+    function damiButonulUltimulVideoclip(număr) {
+      var a = ' <button type="button" onclick="mutăUltimulVideoclip(' + număr + ')">ultimul</button>'
+      return a
+    }
+ 
+    function damiButonulMutăînSusVideoclip(număr) {
+      var a = ' <button type="button" onclick="mutăÎnSusVideoclip(' + număr + ')">sus</button>'
+      return a
+    }
+ 
+    function damiButonulMutăînJosVideoclip(număr) {
+      var a = ' <button type="button" onclick="mutăÎnJosVideoclip(' + număr + ')">jos</button>'
+      return a
+    }
+ 
+    function damiButonulȘtergeVideoclip(număr) {
+      var a = ' <button type="button" onclick="ștergeVideoclip(' + număr + ')">Șterge</button>'
+      return a
+    }
+ 
+    function ștergeVideoclip(număr) {
+      listaVideoclipuri.splice(număr, 1) // remove 1 element at index număr
+      afișeazăLista()
+    }
+ 
+    function convertStoMs(seconds) {
+      let minutes = Math.floor(seconds / 60)
+      let extraSeconds = seconds % 60
+      minutes = minutes < 10 ? "0" + minutes : minutes
+      extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds
+      var a = minutes + ":" + extraSeconds
+      return a
+    }
+ 
+    function verificaEstopare() {
+      let text = 'estompeaza'
+      let text2 = 'detaliiEstompeaza'
+      if (detecteazaMobil()) {
+        document.getElementById(text).value = 0;
+        document.getElementById(text2).style.display = 'none';
+      }
+    }
+ 
+    function detecteazaMobil() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+ 
+      // Verifică prezența celor mai populare sisteme de operare mobile
+      return /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(userAgent) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(userAgent.substr(0, 4))
+    }
+ 
+    function divUtil() {
+      var x = document.getElementById("informațiiUtile")
+      if (x.style.display === "none") {
+        x.style.display = "block"
+      } else {
+        x.style.display = "none"
+      }
+    }
+  </script>
+</body>
