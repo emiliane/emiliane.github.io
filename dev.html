@@ -212,8 +212,8 @@
         iaValori();
         afiseaza(playerUnu, "Unu");
         afiseaza(playerDoi, "Doi");
-        ajusteazaVolum(playerUnu);
-        ajusteazaVolum(playerDoi);
+        ajusteazaVolum(playerUnu, playerUnuInfo);
+        ajusteazaVolum(playerDoi, playerDooInfo);
         redare();
       } catch (err) {
         document.getElementById('informație').innerHTML = err.message;
@@ -403,10 +403,10 @@
       return [redor, info];
     }
  
-    function ajusteazaVolum(redor) {
+    function ajusteazaVolum(redor, info) {
       var volum;
       var timpActual = redor.getCurrentTime();
-      var timpRamas = redor.getDuration() - timpActual;
+      var timpRamas = info[4] - timpActual;
  
       if (timpRamas <= fadeSeconds) {
         var percent = timpRamas / fadeSeconds
