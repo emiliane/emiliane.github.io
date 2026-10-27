@@ -160,12 +160,12 @@
     // 4. The API will call this function when the video player is ready.
     function onPlayerReady(event) {
       playerUnu.unMute();
-      afiseaza(playerUnu, "Unu");
+      afișează(playerUnu, "Unu");
       afișeazăLista();
     }
     function onPlayerReady2(event) {
       playerDoi.unMute();
-      afiseaza(playerDoi, "Doi");
+      afișează(playerDoi, "Doi");
     }
  
     // 5. The API calls this function when the player's state changes.
@@ -210,8 +210,8 @@
     function bucla() {
       try {
         iaValori();
-        afiseaza(playerUnu, "Unu");
-        afiseaza(playerDoi, "Doi");
+        afișează(playerUnu, "Unu");
+        afișează(playerDoi, "Doi");
         ajusteazaVolum(playerUnu, playerUnuInfo);
         ajusteazaVolum(playerDoi, playerDoiInfo);
         redare();
@@ -420,7 +420,7 @@
       redor.setVolume(volum);
     }
  
-    function afiseaza(redor, numar) {
+    function afișează(redor, numar) {
       var titlu = document.querySelector("#player" + numar).title;
  
       if (titlu == "YouTube video player") {
