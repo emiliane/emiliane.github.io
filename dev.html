@@ -76,10 +76,12 @@
     <div class="column" style="background-color:#07a">
       <div id="playerUnu"></div><!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
       <div id="informațieUnu"></div>
+      <div id="informațieUnuDev"></div>
     </div>
     <div class="column" style="background-color:#a70">
       <div id="playerDoi"></div><!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
       <div id="informațieDoi"></div>
+      <div id="informațieDoiDev"></div>
     </div>
   </div>
  
@@ -445,6 +447,8 @@
  
       document.getElementById('titlu' + numar).innerHTML = titlu;
       document.getElementById('informație' + numar).innerHTML = "Volum: " + volum + "<br>Timp: " + timp.toFixed(2);
+      document.getElementById('informațieUnuDev').innerHTML = "A: " + 0 + "<br>A: " + 0;
+      document.getElementById('informațieDoiDev').innerHTML = "A: " + 0 + "<br>A: " + 0;
  
       if (redor.getPlayerState() == YT.PlayerState.PLAYING) {
         document.getElementById('informație').innerHTML = "Volum: " + volum + " secunde rămase: " + timpRamas.toFixed(2) + " timp scurs: " + convertStoMs(timp.toFixed(0));
