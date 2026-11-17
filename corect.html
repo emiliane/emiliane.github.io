@@ -139,26 +139,37 @@
 </script>
 
 <script>
+    var file;
     document.getElementById('fileInput')
         .addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            const filename = file.name;
-            const reader = new FileReader();
-
-            reader.onload = function () {
-                const content = reader.result;
-                console.log(content);
-                document.getElementById("introdus").value = content + filename;
-            };
-
-            reader.onerror = function () {
-                console.error('Error reading the file');
-            };
-
-            encoding = document.getElementById("encoding").value
-            reader.readAsText(file, encoding);
-            localStorage.setItem("filename", filename);
+            file = event.target.files[0];
+            readFile(file);
         });
+
+    function readFile(file) {
+        const filename = file.name;
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const content = reader.result;
+            // console.log(content);
+            document.getElementById("introdus").value = content + filename;
+        };
+
+        reader.onerror = function () {
+            console.error('Error reading the file');
+        };
+
+        encoding = document.getElementById("encoding").value
+        reader.readAsText(file, encoding);
+        localStorage.setItem("filename", filename);
+    }
+
+    const select = document.getElementById('encoding');
+
+    select.addEventListener('change', function handleChange(event) {
+        readFile(file);
+    })
 </script>
 
 <script>
