@@ -147,6 +147,10 @@
         });
 
     function readFile(file) {
+        if (file === undefined || x === null) {
+            return;
+        }
+
         const filename = file.name;
         const reader = new FileReader();
 
