@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-
+<script src="https://unpkg.com/detect-file-encoding-and-language/umd/language-encoding.min.js"></script>
 <html>
 
 <body>
@@ -11,6 +11,9 @@
         <select id="encoding">
             <option value=""></option>
             <option value="x-unicode20utf8">UTF-8</option>
+            <option value="iso">ISO</option>
+            <option value="iso-8859">ISO-8859</option>
+            <option value="iso-8859-1">ISO-8859-1</option>
             <option value="ibm866">IBM866</option>
             <option value="latin2">ISO-8859-2</option>
             <option value="latin3">ISO-8859-3</option>
@@ -145,14 +148,14 @@
     document.getElementById('fileInput')
         .addEventListener('change', (event) => {
             file = event.target.files[0];
-            readFile(file);
+            languageEncoding(file).then((fileInfo) => readFile(file, fileInfo.encoding));
         });
 
     select.addEventListener('change', function handleChange(event) {
-        readFile(file);
+        languageEncoding(file).then((fileInfo) => readFile(file, fileInfo.encoding));
     })
 
-    function readFile(file) {
+    function readFile(file, encoding) {
         if (file === undefined || file === null) {
             return;
         }
@@ -170,9 +173,11 @@
             console.error('Error reading the file');
         };
 
-        encoding = document.getElementById("encoding").value
         reader.readAsText(file, encoding);
         localStorage.setItem("filename", filename);
+
+        corectare();
+        downloadFile();
     }
 
 </script>
